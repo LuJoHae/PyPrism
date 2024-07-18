@@ -6,7 +6,7 @@ requirements.txt
 plots
 results
 references
-bulk_data
+samples
 build
 dist
 __pycache__
