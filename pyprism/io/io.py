@@ -1,4 +1,4 @@
-from further_types import DeconvolutionResult
+from ..types_and_classes import DeconvolutionResult
 from h5py import File as FileH5  # type: ignore
 from numpy import array
 

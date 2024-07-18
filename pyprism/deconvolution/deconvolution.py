@@ -2,8 +2,8 @@ import numpy as np
 import logging
 from beartype import beartype
 from beartype.typing import Any, TypeVar
-from further_types import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
 
+from ..types_and_classes import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
 
 
 @beartype

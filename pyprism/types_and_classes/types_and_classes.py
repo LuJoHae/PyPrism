@@ -5,7 +5,6 @@ from beartype import beartype
 from dataclasses import dataclass
 from numpy import uint64, ndarray
 from anndata import AnnData  # type: ignore
-from numpy import generic
 from h5py import File as FileH5  # type: ignore
 
 

@@ -1,11 +1,16 @@
 playground.ipynb
 Makefile
 main.py
+requirements.txt
 .DS_Store
 plots
 results
 references
 bulk_data
+build
+dist
 __pycache__
 .idea
 .trash
+
+/PyPrism.tar

@@ -1,7 +1,7 @@
 import numpy as np
 from anndata import AnnData  # type: ignore
 from beartype.typing import Tuple
-from further_types import NormalFormRNASeqData, PositiveInt, NonNegativeInt, Seed
+from pyprism.types_and_classes.types_and_classes import NormalFormRNASeqData, PositiveInt, NonNegativeInt, Seed
 
 
 
