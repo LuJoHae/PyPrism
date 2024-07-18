@@ -1,5 +1,6 @@
 from further_types import DeconvolutionResult
-from h5py import File as FileH5
+from h5py import File as FileH5  # type: ignore
+from numpy import array
 
 
 def read_h5dr(filename: str) -> DeconvolutionResult:
@@ -9,5 +10,5 @@ def read_h5dr(filename: str) -> DeconvolutionResult:
             gene_names=file["gene_names"][:],
             sample_names=file["sample_names"][:],
             cell_state_names=file["cell_state_names"][:],
-            number_of_iterations=int(np.array(file["number_of_iterations"]))
+            number_of_iterations=int(array(file["number_of_iterations"]))
         )

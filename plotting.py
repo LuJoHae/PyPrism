@@ -1,4 +1,4 @@
-from anndata import AnnData
+from anndata import AnnData  # type: ignore
 from beartype.typing import Any
 from numpy import array, arange
 

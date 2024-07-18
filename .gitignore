@@ -1,7 +1,11 @@
 playground.ipynb
+Makefile
+main.py
+.DS_Store
 plots
 results
-signatures
-.idea
-.DS_Store
+references
+bulk_data
 __pycache__
+.idea
+.trash

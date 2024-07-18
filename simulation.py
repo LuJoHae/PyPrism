@@ -1,7 +1,6 @@
 import numpy as np
-from anndata import AnnData
-from beartype import beartype
-from beartype.typing import Any
+from anndata import AnnData  # type: ignore
+from beartype.typing import Tuple
 from further_types import NormalFormRNASeqData, PositiveInt, NonNegativeInt, Seed
 
 
@@ -10,7 +9,7 @@ def generate_bulk_data_from_single_cell_data(
         single_cell_data: NormalFormRNASeqData,
         number_of_samples: PositiveInt,
         scale: NonNegativeInt,
-        seed: Seed) -> (NormalFormRNASeqData, AnnData):
+        seed: Seed) -> Tuple[NormalFormRNASeqData, AnnData]:
     """Generate bulk sata from single cell data by randomly uniformly set cell numbers for each cell state and
     multiplying it with the single cell matrix"""
     np.random.seed(seed)

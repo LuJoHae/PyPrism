@@ -1,23 +1,22 @@
-from beartype.typing import Annotated, TypeVar
+from typing_extensions import Annotated
+from typing import TypeAlias
 from beartype.vale import Is
 from beartype import beartype
 from dataclasses import dataclass
 from numpy import uint64, ndarray
-from anndata import AnnData
+from anndata import AnnData  # type: ignore
 from numpy import generic
-from h5py import File as FileH5
+from h5py import File as FileH5  # type: ignore
 
 
-DType = TypeVar("DType", bound=generic)
-
-type PositiveInt = Annotated[int, Is[lambda x: x > 0]]
-type NonNegativeInt = Annotated[int, Is[lambda x: x >= 0]]
-type NonNegativeFloat = Annotated[float, Is[lambda x: x >= 0]]
-type Seed = Annotated[int, Is[lambda x: 0 <= x < 2**32]]
+PositiveInt: TypeAlias = Annotated[int, Is[lambda x: x > 0]]
+NonNegativeInt: TypeAlias = Annotated[int, Is[lambda x: x >= 0]]
+NonNegativeFloat: TypeAlias = Annotated[float, Is[lambda x: x >= 0]]
+Seed: TypeAlias = Annotated[int, Is[lambda x: 0 <= x < 2**32]]
 
 """Normal form is defined as having unscaled count data in an numpy ndarray and ensembl gene ids as obs_names 
 (not yet assured)."""
-type NormalFormRNASeqData = Annotated[
+NormalFormRNASeqData: TypeAlias = Annotated[
     AnnData,
     Is[lambda adata: type(adata.X) is ndarray],
     Is[lambda adata: adata.X.dtype == uint64]

@@ -1,5 +1,5 @@
 import numpy as np
-from anndata import AnnData
+import logging
 from beartype import beartype
 from beartype.typing import Any, TypeVar
 from further_types import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
