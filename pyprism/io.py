@@ -1,6 +1,6 @@
-from ..types_and_classes import DeconvolutionResult
 from h5py import File as FileH5  # type: ignore
 from numpy import array
+from pyprism.types_and_classes import DeconvolutionResult
 
 
 def read_h5dr(filename: str) -> DeconvolutionResult:

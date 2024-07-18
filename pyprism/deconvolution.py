@@ -3,7 +3,7 @@ import logging
 from beartype import beartype
 from beartype.typing import Any, TypeVar
 
-from ..types_and_classes import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
+from pyprism.types_and_classes import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
 
 
 @beartype
