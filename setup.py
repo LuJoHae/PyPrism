@@ -15,7 +15,8 @@ setup(
                       "beartype==0.18.5",
                       "anndata==0.10.8",
                       "h5py==3.11.0",
-                      "pyensembl==2.3.13"
+                      "pyensembl==2.3.13",
+                      "typing_extensions==4.12.2"
                       ],
     classifiers=[
         'Development Status :: 1 - Planning',
