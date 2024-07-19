@@ -18,7 +18,6 @@ Seed: TypeAlias = Annotated[int, Is[lambda x: 0 <= x < 2**32]]
 NormalFormRNASeqData: TypeAlias = Annotated[
     AnnData,
     Is[lambda adata: type(adata.X) is ndarray],
-    Is[lambda adata: adata.X.dtype == uint64]
 ]
 
 
