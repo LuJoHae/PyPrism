@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="pyprism",
-    version="0.0.1",
+    version="0.0.2",
     description="""A deconvolution framework for bulk RNA-seq count data based on BayesPrism, implementing 
     the improved algorithm of InstaPrism in Python, integrated into the ScVerse, and interoperable with AnnData and 
     HDF5 files.""",
