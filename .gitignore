@@ -17,3 +17,4 @@ __pycache__
 *.tar
 *.npy
 *.sqlite3
+main-*.py
