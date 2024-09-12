@@ -11,6 +11,7 @@ from .utils import sum_data_parts, remove_zero_obs, reduce_to_common_obs
 from .io import read_h5dr
 from .simulation import generate_bulk_data_from_single_cell_data
 from .deconvolution import multi_deconvolution, deconvolution
+from .datasets import file_hash_md5, get_dataset, get_dataset_source_details
 
 __version__ = "0.0.2"
 __author__ = "Lukas Jonathan Haeuser"
