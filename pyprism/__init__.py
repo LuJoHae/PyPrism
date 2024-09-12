@@ -12,5 +12,5 @@ from .io import read_h5dr
 from .simulation import generate_bulk_data_from_single_cell_data
 from .deconvolution import multi_deconvolution, deconvolution
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __author__ = "Lukas Jonathan Haeuser"

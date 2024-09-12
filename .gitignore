@@ -9,8 +9,11 @@ references
 samples
 build
 dist
+download
 __pycache__
 .idea
 .trash
 
 *.tar
+*.npy
+*.sqlite3

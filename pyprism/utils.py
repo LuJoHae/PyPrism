@@ -15,5 +15,10 @@ def reduce_to_common_obs(adata, bdata):
     return adata[obs_list, :].copy(), bdata[obs_list, :].copy()
 
 
+def reduce_to_common_var(adata, bdata):
+    var_list = sorted(list(set.intersection(set(adata.var_names), set(bdata.var_names))))
+    return adata[:, var_list], bdata[:, var_list]
+
+
 def remove_zero_obs(adata: AnnData) -> AnnData:
     return adata[adata.X.sum(axis=1) > 0]
