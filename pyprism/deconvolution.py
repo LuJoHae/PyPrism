@@ -35,7 +35,7 @@ def multi_deconvolution(bulk_data: NormalFormRNASeqData,
                                number_of_iterations=number_of_iterations)
 
 
-#@njit(parallel=True)
+@njit(parallel=True)
 def multi_parallel_deconvolution(bulk_data,
                                  single_cell_reference,
                                  number_of_iterations
