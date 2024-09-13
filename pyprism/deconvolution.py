@@ -49,9 +49,9 @@ def multi_parallel_deconvolution(bulk_data,
 
     # Iteration scheme
     for i in range(number_of_iterations):
-        expression_tensor = normalized_reference.reshape((-1, -1, 1)) * cell_state_fraction.reshape((1, -1, -1))
-        expression_tensor = expression_tensor / expression_tensor.sum(axis=1).reshape((-1, 1, -1))
-        expression_tensor = bulk_data.reshape((-1, 1, -1)) * expression_tensor
+        expression_tensor = normalized_reference.reshape((normalized_reference.shape[0], normalized_reference.shape[1], 1)) * cell_state_fraction.reshape((1, cell_state_fraction.shape[0], cell_state_fraction.shape[1]))
+        expression_tensor = expression_tensor / expression_tensor.sum(axis=1).reshape((expression_tensor.shape[0], 1, expression_tensor.shape[2]))
+        expression_tensor = bulk_data.reshape((bulk_data.shape[0], 1, bulk_data.shape[1])) * expression_tensor
         cell_state_fraction = expression_tensor.sum(axis=0)
         cell_state_fraction = cell_state_fraction / cell_state_fraction.sum(axis=0)
 
