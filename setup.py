@@ -16,7 +16,8 @@ setup(
                       "anndata==0.10.8",
                       "h5py==3.11.0",
                       "pyensembl==2.3.13",
-                      "typing_extensions==4.12.2"
+                      "typing_extensions==4.12.2",
+                      "numba==0.60.0"
                       ],
     classifiers=[
         'Development Status :: 1 - Planning',
