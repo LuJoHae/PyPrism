@@ -97,7 +97,7 @@ def get_dataset_source_details(dataset_name):
             hash_md5="e6d9df4a627bdd60cb4898be2ede77cd",
             adata_hash="65a44fc230c25ae58dbad2b478a3327f",
             convert_to_h5ad=_breast_cancer_single_cell_convert_to_h5ad,
-            read_h5ad=lambda: ad.read_h5ad("download/e6d9df4a627bdd60cb4898be2ede77cd/data.h5ad", backed="r")
+            read_h5ad=lambda: ad.read_h5ad("download/e6d9df4a627bdd60cb4898be2ede77cd/data.h5ad")
         )
     }
     return dataset_source_details[dataset_name]
