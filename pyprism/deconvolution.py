@@ -80,3 +80,28 @@ def deconvolution(bulk_data: NormalFormRNASeqData,
         cell_state_fraction = cell_state_fraction / cell_state_fraction.sum()
 
     return cell_state_fraction
+
+
+@njit(parallel=True)
+def deconvolution_parallel(bulk, reference, n=10):
+    c, g = reference.shape
+
+    # library normalize reference
+    reference = reference / np.repeat(reference.sum(axis=1), g).reshape((c, g))
+
+    # Initialize expression matrix
+    B = np.ones(shape=(c, g)) / np.repeat(c * g, c * g).reshape((c, g))
+
+    # Iteration scheme
+    for i in range(n):
+        B = reference * np.repeat(B.sum(axis=1), g).reshape((c, g))
+        B = B / np.repeat(B.sum(axis=0), c).reshape((g, c)).T
+        B = B * bulk
+
+    return B
+
+
+def calculate_fractions(B):
+    theta = B.sum(axis=1)
+    theta = theta / theta.sum()
+    return theta
