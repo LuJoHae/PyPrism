@@ -3,6 +3,7 @@ import logging
 from beartype import beartype
 from beartype.typing import Any, TypeVar
 from numba import njit
+from anndata import AnnData
 
 from pyprism.types_and_classes import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
 
@@ -60,7 +61,7 @@ def multi_parallel_deconvolution(bulk_data,
 
 
 @beartype
-def deconvolution(bulk_data: NormalFormRNASeqData,
+def _deconvolution(bulk_data: NormalFormRNASeqData,
                   single_cell_reference: NormalFormRNASeqData,
                   number_of_iterations: PositiveInt
                   ) -> Any:
@@ -82,12 +83,16 @@ def deconvolution(bulk_data: NormalFormRNASeqData,
     return cell_state_fraction
 
 
-@njit(parallel=True)
-def deconvolution_parallel(bulk, reference, n=10):
+#@njit(parallel=True)
+def deconvolution_parallel(bulk: AnnData, reference: AnnData, n: int = 10, library_normalization: bool = True):
+    result = reference
+    bulk = np.array(bulk.X, dtype=np.float64)
+    reference = np.array(reference.X, dtype=np.float64)
     c, g = reference.shape
 
     # library normalize reference
-    reference = reference / np.repeat(reference.sum(axis=1), g).reshape((c, g))
+    if library_normalization:
+        reference = reference / np.repeat(reference.sum(axis=1), g).reshape((c, g))
 
     # Initialize expression matrix
     B = np.ones(shape=(c, g)) / np.repeat(c * g, c * g).reshape((c, g))
@@ -95,13 +100,14 @@ def deconvolution_parallel(bulk, reference, n=10):
     # Iteration scheme
     for i in range(n):
         B = reference * np.repeat(B.sum(axis=1), g).reshape((c, g))
-        B = B / np.repeat(B.sum(axis=0), c).reshape((g, c)).T
-        B = B * bulk
+        B = B / (np.repeat(B.sum(axis=0), c).reshape((g, c)).T + np.finfo(float).eps)
+        B = B * np.repeat(bulk, c).reshape((g, c)).T
 
-    return B
+    result.X = B
+    return result
 
 
-def calculate_fractions(B):
-    theta = B.sum(axis=1)
+def calculate_fractions(B: AnnData):
+    theta = B.X.sum(axis=1)
     theta = theta / theta.sum()
     return theta
