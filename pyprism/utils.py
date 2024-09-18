@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import array, random
 from anndata import AnnData  # type: ignore
 
 
@@ -22,3 +22,8 @@ def reduce_to_common_var(adata, bdata):
 
 def remove_zero_obs(adata: AnnData) -> AnnData:
     return adata[adata.X.sum(axis=1) > 0]
+
+
+def sample_adata(adata, n, seed=0):
+    random.seed(seed)
+    return adata[random.randint(0, adata.n_obs, n), :].copy()
