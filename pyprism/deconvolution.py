@@ -99,7 +99,7 @@ def _deconvolution(bulk: np.array, reference: np.array, n: np.array, eps: float)
     return B
 
 
-def deconvolution(bulk: AnnData, reference: AnnData, n: int = 10, library_normalization: bool = True):
+def single_deconvolution(bulk: AnnData, reference: AnnData, n: int = 10, library_normalization: bool = True):
     obs = reference.obs
     var = reference.var
     reference = np.array(reference.X, dtype=np.float64)
@@ -110,7 +110,8 @@ def deconvolution(bulk: AnnData, reference: AnnData, n: int = 10, library_normal
         c, g = reference.shape
         reference = reference / np.repeat(reference.sum(axis=1), g).reshape((c, g))
 
-    result = AnnData(_deconvolution(bulk=bulk, reference=reference, n=n, eps=np.finfo(float).eps))
+    result = _deconvolution(bulk=bulk, reference=reference, n=n, eps=np.finfo(float).eps)
+    result = AnnData(result)
     result.obs = obs
     result.var = var
 
