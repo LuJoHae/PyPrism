@@ -1,11 +1,12 @@
 playground.ipynb
 Makefile
-main.py
+pyprism/scripts/main.py
 requirements.txt
 .DS_Store
 plots
 results
 references
+references_ensembl
 samples
 build
 dist
@@ -17,4 +18,6 @@ __pycache__
 *.tar
 *.npy
 *.sqlite3
+*.h5ad
+*.h5pd
 main-*.py
