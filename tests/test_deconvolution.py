@@ -6,6 +6,8 @@ from pyprism.deconvolution import deconvolution_parallel
 
 
 class TestDeconvolutionParallel(unittest.TestCase):
+    def test_bob(self):
+        self.assertTrue(True)
     def test_deconvolution_parallel(self):
         test_status = True
         for seed in range(20):

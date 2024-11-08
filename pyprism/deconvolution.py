@@ -1,12 +1,27 @@
+from dataclasses import dataclass
+from typing import TypeAlias
+
+from beartype.vale import Is
+from typing_extensions import Annotated
+
 import numpy as np
 import logging
 from beartype import beartype
 from beartype.typing import Any, TypeVar
+from h5py import File as FileH5
 from numba import njit
 from anndata import AnnData
+from numpy import ndarray, array
 from pandas import DataFrame
 
-from pyprism.types_and_classes import PositiveInt, NormalFormRNASeqData, DeconvolutionResult
+PositiveInt: TypeAlias = Annotated[int, Is[lambda x: x > 0]]
+NonNegativeInt: TypeAlias = Annotated[int, Is[lambda x: x >= 0]]
+NonNegativeFloat: TypeAlias = Annotated[float, Is[lambda x: x >= 0]]
+Seed: TypeAlias = Annotated[int, Is[lambda x: 0 <= x < 2**32]]
+NormalFormRNASeqData: TypeAlias = Annotated[
+    AnnData,
+    Is[lambda adata: type(adata.X) is ndarray],
+]
 
 
 # @beartype
@@ -132,3 +147,46 @@ def get_cell_type_fractions(reference, cell_type_label, fractions_label):
         df = reference.obs[reference.obs[cell_type_label] == cell_type]
         result[cell_type] = df[fractions_label].sum()
     return result
+
+
+@beartype
+@dataclass(frozen=True)
+class DeconvolutionResult:
+    """Class for storing the results of a deconvolution. Is returned by deconvolution and also keeps track of the used
+    parameters of the convolution."""
+    expression_tensor: ndarray
+    gene_names: ndarray
+    sample_names: ndarray
+    cell_state_names: ndarray
+    number_of_iterations: PositiveInt
+
+    def __str__(self):
+        return "DeconvolutionResult(Genes: {}, Cell States: {}, Samples: {}, Iterations: {})".format(
+            *self.expression_tensor.shape, self.number_of_iterations)
+
+    def get_cell_state_fractions(self):
+        cell_state_fraction = self.expression_tensor.sum(axis=0)
+        cell_state_fraction = cell_state_fraction / cell_state_fraction.sum(axis=0)
+        cell_state_fraction = AnnData(cell_state_fraction)
+        cell_state_fraction.obs_names = self.cell_state_names
+        cell_state_fraction.var_names = self.sample_names
+        return cell_state_fraction
+
+    def write_h5dr(self, filename: str) -> None:
+        with FileH5(filename, "w") as file:
+            file.create_dataset(name="expression_tensor", data=self.expression_tensor)
+            file.create_dataset(name="gene_names", data=self.gene_names)
+            file.create_dataset(name="sample_names", data=self.sample_names)
+            file.create_dataset(name="cell_state_names", data=self.cell_state_names)
+            file.create_dataset(name="number_of_iterations", data=self.number_of_iterations)
+
+
+def read_h5dr(filename: str) -> DeconvolutionResult:
+    with FileH5(filename, "r") as file:
+        return DeconvolutionResult(
+            expression_tensor=file["expression_tensor"][:],
+            gene_names=file["gene_names"][:],
+            sample_names=file["sample_names"][:],
+            cell_state_names=file["cell_state_names"][:],
+            number_of_iterations=int(array(file["number_of_iterations"]))
+        )

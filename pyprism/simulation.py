@@ -1,8 +1,7 @@
 import numpy as np
 from anndata import AnnData  # type: ignore
 from beartype.typing import Tuple
-from pyprism.types_and_classes import NormalFormRNASeqData, PositiveInt, NonNegativeInt, Seed
-
+from pyprism.deconvolution import PositiveInt, NonNegativeInt, Seed, NormalFormRNASeqData
 
 
 def generate_bulk_data_from_single_cell_data(
