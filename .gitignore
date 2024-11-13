@@ -11,6 +11,9 @@ samples
 build
 dist
 download
+deconvolution_results
+output_dir
+store
 __pycache__
 .idea
 .trash
@@ -21,3 +24,5 @@ __pycache__
 *.h5ad
 *.h5pd
 main-*.py
+*.png
+*.xlsx

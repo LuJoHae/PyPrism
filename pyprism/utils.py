@@ -1,10 +1,11 @@
 from beartype.typing import List
-from numpy import array, random
+from numpy import array, random, repeat, float32, float64
 from anndata import AnnData  # type: ignore
 from pandas.core.common import random_state
 from pyensembl import EnsemblRelease
 from numpy.random import default_rng as rng
 from sklearn.cluster import KMeans
+from sklearn_extra.cluster import KMedoids
 
 
 def sum_data_parts(data: AnnData, partition_map: dict) -> AnnData:
@@ -67,15 +68,4 @@ MITOCHONDRIA_GENES = [
 ]
 
 
-def calc_centroids(adata: AnnData, n_clusters: int, seed: int = 0) -> AnnData:
-    estimator = KMeans(n_clusters=n_clusters, init="k-means++", random_state=seed)
-    _ = estimator.fit(adata.X)
 
-    cluster_centers = AnnData(estimator.cluster_centers_)
-    cluster_centers.var_names = adata.var_names
-    cluster_centers.obs_names = ["cluster_{}".format(i) for i in range(n_clusters)]
-    # cluster_centers.uns["cluster_method"] = {
-    #     "method": "KMeans",
-    #     "estimator": estimator
-    # }
-    return cluster_centers

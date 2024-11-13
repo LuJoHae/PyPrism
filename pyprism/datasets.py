@@ -6,7 +6,6 @@ from functools import partial
 from anndata import AnnData, concat, read_h5ad
 from numpy import repeat
 import scanpy as sc
-from pyprism.utils import calc_centroids
 
 
 class WuEtAl2021(StoreElementContainer):
@@ -127,6 +126,31 @@ def wu_et_al_2021_centroids(store: Store):
         store=store,
         derivation=derivation,
         derivation_files=[WuEtAl2021(store=store)],
+        load_from_store=load_from_store
+    )
+    return store_element
+
+
+def petralia_et_al_2024_raw(store: Store):
+    """
+    Patient data from CPTAC python package and supplementary data in downloads directory
+    https://paynelab.github.io/cptac/tutorial01_data_intro.html
+    :param store:
+    :return:
+    """
+
+    def derivation(output_dir, derivation_store_files):
+        assert len(derivation_store_files) == 0
+
+    def load_from_store(self_: StoreElement) -> AnnData:
+        return None
+
+    store_element = StoreElement(
+        name="Petralia_et_al_2024_raw",
+        hash=Hash(None),
+        store=store,
+        derivation=derivation,
+        derivation_files=[],
         load_from_store=load_from_store
     )
     return store_element
