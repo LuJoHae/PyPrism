@@ -4,8 +4,6 @@ from anndata import AnnData  # type: ignore
 from pandas.core.common import random_state
 from pyensembl import EnsemblRelease
 from numpy.random import default_rng as rng
-from sklearn.cluster import KMeans
-from sklearn_extra.cluster import KMedoids
 
 
 def sum_data_parts(data: AnnData, partition_map: dict) -> AnnData:
