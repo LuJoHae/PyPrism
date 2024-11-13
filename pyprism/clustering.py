@@ -14,5 +14,6 @@ def calc_kmeans_centroids(adata: AnnData, n_clusters: int):
     adata.X = adata.X.astype(dtype=float64)
     estimator = KMeans(n_clusters=n_clusters, init="k-means++", random_state=0, n_init=1)
     adata.obs[method_name + "_cluster"] = estimator.fit_predict(adata.X)
-    adata.varm[method_name] = DataFrame(array(estimator.cluster_centers_, dtype=float32), columns=adata.var_names,
-                                        index=["cluster_{}".format(i) for i in range(n_clusters)])
+    adata.varm[method_name] = DataFrame(array(estimator.cluster_centers_.T, dtype=float32),
+                                        columns=["cluster_{}".format(i) for i in range(n_clusters)],
+                                        index=adata.var_names)
