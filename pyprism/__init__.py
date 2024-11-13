@@ -12,6 +12,7 @@ from . import simulation
 from . import deconvolution
 from . import datasets
 from . import store
+from . import clustering
 
 __version__ = "0.0.2"
 __author__ = "Lukas Jonathan Haeuser"
