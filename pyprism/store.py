@@ -16,6 +16,7 @@ import tarfile
 from anndata import read_mtx
 from pandas import read_csv
 import weakref
+from sys import platform
 
 
 class WeakMethod:
@@ -73,20 +74,50 @@ class Hash:
         return self._hash == other._hash
 
 
+class OSDependentHash:
+    def __init__(self, linux_hash: Hash, darwin_hash: Hash):
+        assert isinstance(linux_hash, Hash)
+        assert isinstance(darwin_hash, Hash)
+        self._linux_hash = linux_hash
+        self._darwin_hash = darwin_hash
+
+    def get_hash(self) -> Hash:
+        if platform == "linux" or platform == "linux2":
+            return self._linux_hash
+        elif platform == "darwin":
+            return self._darwin_hash
+        else:
+            raise OSError(f"Unsupported platform: {platform}")
+
+    def set_hash(self, hash: Hash):
+        if platform == "linux" or platform == "linux2":
+            self._linux_hash = hash
+        elif platform == "darwin":
+            self._darwin_hash = hash
+        else:
+            raise OSError(f"Unsupported platform: {platform}")
+
+
 class StoreElement:
-    def __init__(self, name: str, hash: Hash, store: Store, derivation, derivation_files, load_from_store):
+    def __init__(self, name: str, linux_hash: Hash, darwin_hash: Hash, store: Store, derivation, derivation_files, load_from_store):
         self._name = name
-        self._hash = hash
+        self._os_dependent_hash = OSDependentHash(linux_hash=linux_hash, darwin_hash=darwin_hash)
         self._store = store
         self._derivation = derivation
         self._derivation_store_files = derivation_files
         self._load_from_store = WeakMethod(load_from_store, self)
 
     def __str__(self):
-        return f"File \"{self._name}\" in store \"{self._store}\" with hash \"{str(self._hash)}\""
+        return f"File \"{self._name}\" in store \"{self._store}\" with hash \"{str(self.get_hash())}\""
+
+    def get_hash(self) -> Hash:
+        return self._os_dependent_hash.get_hash()
+
+    def set_hash(self):
+        return self._os_dependent_hash.set_hash()
 
     def get_path(self):
-        return self._store.get_path() / f"{str(self._hash)}-{self._name}"
+        return self._store.get_path() / f"{str(self.get_hash())}-{self._name}"
 
     def store_exists(self):
         return self._store.exists()
@@ -101,11 +132,11 @@ class StoreElement:
             logging.debug(f"Temporary directory: {tmpdir}")
             filepath = self._derivation(output_dir=Path(tmpdir), derivation_store_files=self._derivation_store_files)
             true_hash = Hash(dirhash(tmpdir))
-            if self._hash._hash is None:
+            if self.get_hash()._hash is None:
                 logging.debug("Hash is None and hash checking is ignored!")
-                self._hash = true_hash
-            assert self._hash == true_hash, f"Hash is incorrect! Expected hash: {self._hash}, got {true_hash}"
-            logging.debug(f"Hash: {self._hash}")
+                self.set_hash(true_hash)
+            assert self.get_hash() == true_hash, f"Hash is incorrect! Expected hash: {self.get_hash()}, got {true_hash}"
+            logging.debug(f"Hash: {self.get_hash()}")
             os.replace(tmpdir, self.get_path())
 
     def _download_derivation_files(self):

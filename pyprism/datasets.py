@@ -13,7 +13,7 @@ class WuEtAl2021(StoreElementContainer):
     def __init__(self, store: Store):
         self.store = store
         self.gsm_list = [GSM(f"GSM53545{i:02d}") for i in range(13, 39)]
-        self.hashes = [
+        self.darwin_hashes = [
             Hash("d39e99b726e5e5c8a913baf0129c012f"),  # GSM5354513
             Hash("cc1c8ca5f8f61092f809c3e26ea9316f"),  # GSM5354514
             Hash("bc0debfa94905d725bc2fc06f9ba0002"),  # GSM5354515
@@ -41,6 +41,34 @@ class WuEtAl2021(StoreElementContainer):
             Hash("a1b383932c1c8cc60861b3ce8e3dd615"),  # GSM5354537
             Hash("8e4dce62cd14ce526bbae8a31656fbfe")   # GSM5354538
         ]
+        self.linux_hashes = [
+            Hash("bca6fab1b19a441f52d392383ee15c12"),  # GSM5354513
+            Hash("0902b8a3e71e7d3946e11337e9092db6"),  # GSM5354514
+            Hash("f1a031c2eafa0cce8969d11b87daea06"),  # GSM5354515
+            Hash("3d28a4fad7e920758341e2d8c5752418"),  # GSM5354516
+            Hash("d2dfa38e45067697dee92ee959cfeac6"),  # GSM5354517
+            Hash("eba547ab308198b28f1b4dc722be7fee"),  # GSM5354518
+            Hash("079abcc38163434639a3854bcab3a05a"),  # GSM5354519
+            Hash("6473e1db9ce0f769fc64241dd0a54168"),  # GSM5354520
+            Hash("2d10d93de16f9cd77d099074d76cbd70"),  # GSM5354521
+            Hash("afca7b0cbc4ffb5b166c35c2778cf419"),  # GSM5354522
+            Hash("a6ef00fc4c661be694d9240343311dbf"),  # GSM5354523
+            Hash("1a44090f93577dd2e236f02fbed98560"),  # GSM5354524
+            Hash("fedd1dde1f6ec4cd468b218311325aa7"),  # GSM5354525
+            Hash("dfb991ee8d050b5b9d41c7e86833223f"),  # GSM5354526
+            Hash("d6580ade6fb5ddef67ed7213f4d0cba8"),  # GSM5354527
+            Hash("8204aa5649fb8d01aad02b853597f7fd"),  # GSM5354528
+            Hash("1cf9f2cf384eec009e50e1c633bc0455"),  # GSM5354529
+            Hash("3d2c2bf8af127ba3aa6d9a9384d82b8b"),  # GSM5354530
+            Hash("b7856f0c5dd3381f9be638c7ffd2ce93"),  # GSM5354531
+            Hash("0edcdbc53c2191a74614eacb11e21062"),  # GSM5354532
+            Hash("a286a242956dcdacebd0e02fd8a789d1"),  # GSM5354533
+            Hash("1f1fdc3e9e2a00b782bf8ab107c9d632"),  # GSM5354534
+            Hash("c0dfb2bced3a939e92efd810a8370031"),  # GSM5354535
+            Hash("46f0aca3609bd7f441d893fa3c88525d"),  # GSM5354536
+            Hash("80205dc798d15c6c12b01dd03dd4d0b3"),  # GSM5354537
+            Hash("38fc4d64c42e9d67f1be44f02ecdd28e")   # GSM5354538
+        ]
 
         def derivation(gsm: GSM, output_dir: TextIOWrapper, derivation_store_files) -> Path:  # TODO: from derivation_store_files to derivation_store_file_HANDLES
             gsm_filepath = download_gsm(gsm=gsm, output_dir=output_dir)
@@ -54,13 +82,14 @@ class WuEtAl2021(StoreElementContainer):
         self.store_files = [
             StoreElement(
                 name=f"Wu_et_al_2021_raw_{gsm}",
-                hash=hash_,
+                linux_hash=linux_hash_,
+                darwin_hash=darwin_hash_,
                 store=self.store,
                 derivation=partial(derivation, gsm),
                 derivation_files=[],
                 load_from_store=partial(load_from_store, gsm)
             )
-            for gsm, hash_ in zip(self.gsm_list, self.hashes)
+            for gsm, linux_hash_, darwin_hash_ in zip(self.gsm_list, self.linux_hashes, self.darwin_hashes)
         ]
 
     def get(self, gsm: GSM | None = None) -> AnnData:
@@ -147,6 +176,30 @@ def petralia_et_al_2024_raw(store: Store):
 
     store_element = StoreElement(
         name="Petralia_et_al_2024_raw",
+        hash=Hash(None),
+        store=store,
+        derivation=derivation,
+        derivation_files=[],
+        load_from_store=load_from_store
+    )
+    return store_element
+
+
+def thorsson_et_al_2018_raw(store: Store):
+    """
+    Data to cluster TMEs into immune subtypes
+    :param store:
+    :return:
+    """
+
+    def derivation(output_dir, derivation_store_files):
+        assert len(derivation_store_files) == 0
+
+    def load_from_store(self_: StoreElement) -> AnnData:
+        return None
+
+    store_element = StoreElement(
+        name="Thorsson_et_al_2018_raw",
         hash=Hash(None),
         store=store,
         derivation=derivation,
