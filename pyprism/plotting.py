@@ -1,6 +1,9 @@
-from anndata import AnnData  # type: ignore
+from anndata import AnnData, concat  # type: ignore
 from beartype.typing import Any
 from numpy import array, arange
+from scanpy.preprocessing import pca, neighbors
+from scanpy.tools import umap
+from matplotlib.pyplot import scatter, show
 
 
 def plot_bar_charts_from_anndata(adata: AnnData, axes: Any) -> None:
@@ -17,3 +20,16 @@ def plot_bar_charts_from_anndata(adata: AnnData, axes: Any) -> None:
                                labels=adata.obs_names, rotation=90)
             axes[i].yaxis.grid(True)
             multiplier += 1
+
+
+def plot_umap_with_varm(adata, varm_key, obs_key=None, size1=20, size2=50):
+    varm = AnnData(adata.varm[varm_key]).T
+    number_of_clusters = varm.n_obs
+    adata = concat([adata, varm], axis=0, join="outer")
+    pca(adata)
+    neighbors(adata)
+    umap(adata)
+    for cluster_index in range(number_of_clusters):
+        scatter(*adata.obsm["X_umap"][adata.obs[varm_key] == str(cluster_index), :].T, s=size1, marker=".")
+    scatter(*adata.obsm["X_umap"][-number_of_clusters:, :].T, s=size2, marker="*", color="black")
+    show()
