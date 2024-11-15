@@ -50,7 +50,7 @@ class HiddenConsoleOutput:
 
 
 class Store:
-    def __init__(self, path: Path = Path("tmp")):
+    def __init__(self, path: Path = Path("store")):
         self._path = Path(path)
 
     def __str__(self):
@@ -61,6 +61,11 @@ class Store:
 
     def exists(self):
         return self._path.is_dir()
+
+    def create(self):
+        if self.exists():
+            raise FileExistsError(f"Store already exists at \"{self.get_path()}\"")
+        os.makedirs(self.get_path(), exist_ok=False)
 
 
 class Hash:
