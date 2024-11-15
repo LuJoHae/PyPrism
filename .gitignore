@@ -1,7 +1,6 @@
 playground.ipynb
 Makefile
-pyprism/scripts/main.py
-requirements.txt
+main.py
 .DS_Store
 plots
 results
@@ -14,6 +13,7 @@ download
 deconvolution_results
 output_dir
 store
+venv
 __pycache__
 .idea
 .trash

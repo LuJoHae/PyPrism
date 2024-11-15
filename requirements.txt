@@ -1,0 +1,15 @@
+anndata==0.10.8
+annotated-types==0.7.0
+beartype==0.18.5
+matplotlib==3.9.1
+numba==0.60.0
+numpy==1.26.0
+pandas==2.2.2
+pyarrow==14.0.2
+pydantic==2.8.2
+pyensembl==2.3.13
+requests==2.32.3
+scanpy==1.10.2
+scikit-learn==1.5.1
+scipy==1.14.0
+setuptools==70.2.0
