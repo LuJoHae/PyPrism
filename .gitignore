@@ -24,5 +24,6 @@ __pycache__
 *.h5ad
 *.h5pd
 main-*.py
+main.py
 *.png
 *.xlsx
