@@ -4,6 +4,17 @@ from anndata import AnnData  # type: ignore
 from pandas.core.common import random_state
 from pyensembl import EnsemblRelease
 from numpy.random import default_rng as rng
+import logging
+
+
+logger = logging.getLogger('pyprism')
+
+
+def test_logger():
+    logger.error("ellol")
+    logger.warning("waling")
+    logger.info("impfo")
+    logger.debug("diback")
 
 
 def sum_data_parts(data: AnnData, partition_map: dict) -> AnnData:
@@ -11,6 +22,14 @@ def sum_data_parts(data: AnnData, partition_map: dict) -> AnnData:
     result = AnnData(array([data[partition_map[part]].X.sum(axis=0) for part in parts]))
     result.var_names = data.var_names
     result.obs_names = parts
+    return result
+
+
+def sum_var_partitions(data: AnnData, partition_map: dict) -> AnnData:
+    parts = partition_map.keys()
+    result = AnnData(array([data[:, partition_map[part]].X.sum(axis=1) for part in parts]).T)
+    result.var_names = parts
+    result.obs_names = data.obs_names
     return result
 
 

@@ -17,7 +17,8 @@ setup(
                       "h5py==3.11.0",
                       "pyensembl==2.3.13",
                       "typing_extensions==4.12.2",
-                      "numba==0.60.0"
+                      "numba==0.60.0",
+                      "xarray==2024.10.0"
                       ],
     classifiers=[
         'Development Status :: 1 - Planning',

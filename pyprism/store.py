@@ -1,22 +1,21 @@
 import logging
 from pathlib import Path
-import requests
 import GEOparse
 from io import TextIOWrapper
 from tempfile import TemporaryDirectory
 import os
-import hashlib
-import pickle
 import sys
-from typing import List
 from checksumdir import dirhash
 import re
 import shutil
 import tarfile
-from anndata import read_mtx
+from anndata.io import read_mtx
 from pandas import read_csv
 import weakref
 from sys import platform
+
+
+logger = logging.getLogger('pyprism')
 
 
 class WeakMethod:
@@ -94,11 +93,11 @@ class OSDependentHash:
         else:
             raise OSError(f"Unsupported platform: {platform}")
 
-    def set_hash(self, hash: Hash):
+    def set_hash(self, hash_: Hash):
         if platform == "linux" or platform == "linux2":
-            self._linux_hash = hash
+            self._linux_hash = hash_
         elif platform == "darwin":
-            self._darwin_hash = hash
+            self._darwin_hash = hash_
         else:
             raise OSError(f"Unsupported platform: {platform}")
 
@@ -118,8 +117,8 @@ class StoreElement:
     def get_hash(self) -> Hash:
         return self._os_dependent_hash.get_hash()
 
-    def set_hash(self):
-        return self._os_dependent_hash.set_hash()
+    def set_hash(self, hash: Hash):
+        return self._os_dependent_hash.set_hash(hash)
 
     def get_path(self):
         return self._store.get_path() / f"{str(self.get_hash())}-{self._name}"
@@ -134,30 +133,32 @@ class StoreElement:
 
     def _download(self):
         with TemporaryDirectory() as tmpdir:
-            logging.debug(f"Temporary directory: {tmpdir}")
-            filepath = self._derivation(output_dir=Path(tmpdir), derivation_store_files=self._derivation_store_files)
+            logger.debug(f"Temporary directory: {tmpdir}")
+            _ = self._derivation(output_dir=Path(tmpdir), derivation_store_files=self._derivation_store_files)
             true_hash = Hash(dirhash(tmpdir))
             if self.get_hash()._hash is None:
-                logging.debug("Hash is None and hash checking is ignored!")
+                logger.debug("Hash is None and hash checking is ignored!")
                 self.set_hash(true_hash)
             assert self.get_hash() == true_hash, f"Hash is incorrect! Expected hash: {self.get_hash()}, got {true_hash}"
-            logging.debug(f"Hash: {self.get_hash()}")
+            logger.debug(f"Hash: {self.get_hash()}")
             os.replace(tmpdir, self.get_path())
 
     def _download_derivation_files(self):
-        logging.debug(f"{self} does not exist and must be derived!")
+        logger.debug(f"{self} does not exist and must be derived!")
         for derivation_store_file in self._derivation_store_files:
-            logging.debug(f"Derivation {derivation_store_file} does not exist and must be derived!")
+            logger.debug(f"Derivation {derivation_store_file} does not exist and must be derived!")
             if not derivation_store_file.exists():
                 derivation_store_file.get()
 
-    def get(self):
+    def get(self, verbose: bool = False):
         if self.exists():
-            logging.debug(f"Store file {self} already exists!")
+            logger.info(f"Store file {self} already exists!")
         else:
+            logger.info(f"Downloading derivations files of {self}!")
             self._download_derivation_files()
+            logger.info(f"Downloading file {self}!")
             self._download()
-        logging.debug(f"load_from_store: {self._load_from_store}")
+        logger.debug(f"load_from_store: {self._load_from_store}")
         return self._load_from_store()
 
 
@@ -212,23 +213,23 @@ def extract_and_delete_directory(dir: Path):
 
 def download_gsm(gsm: GSM, output_dir: TextIOWrapper) :
     output_dir = Path(output_dir)
-    logging.debug(f"output_dir: {output_dir}")
-    gsm = GEOparse.get_GEO(geo=gsm._gsm, destdir="output_dir", silent=True)
+    logger.debug(f"output_dir: {output_dir}")
+    gsm = GEOparse.get_GEO(geo=gsm._gsm, destdir=output_dir, silent=True)
     with HiddenConsoleOutput():
         gsm.download_supplementary_files(directory=output_dir, download_sra=False)
     supplementary_directory = get_path_singleton(output_dir)
-    logging.debug(f"supplementary_directory.name: {supplementary_directory.name}")
+    logger.debug(f"supplementary_directory.name: {supplementary_directory.name}")
     assert re.compile("^Supp_GSM[0-9]{7}_CID[0-9]{4}[1,A,N]?$").match(supplementary_directory.name), \
         "Supplementary directory does not match regex!"
     extract_and_delete_directory(supplementary_directory)
     supplementary_tarfile = get_path_singleton(output_dir)
-    logging.debug(f"supplementary_directory.name: {supplementary_directory.name}; supplementary_tarfile.name: {supplementary_tarfile.name}")
+    logger.debug(f"supplementary_directory.name: {supplementary_directory.name}; supplementary_tarfile.name: {supplementary_tarfile.name}")
     assert supplementary_directory.name[5:] + ".tar.gz" == supplementary_tarfile.name
     with tarfile.open(supplementary_tarfile, "r") as tar:
         tar.extractall(output_dir)
     os.remove(supplementary_tarfile)
     cid_directory = get_path_singleton(output_dir)
-    logging.debug(f"supplementary_directory.name[17:]: {supplementary_directory.name[16:]}; cid_directory.name: {cid_directory.name}")
+    logger.debug(f"supplementary_directory.name[17:]: {supplementary_directory.name[16:]}; cid_directory.name: {cid_directory.name}")
     assert cid_directory.name == supplementary_directory.name[16:]
     extract_and_delete_directory(cid_directory)
 
@@ -238,13 +239,13 @@ def download_gsm(gsm: GSM, output_dir: TextIOWrapper) :
     adata = read_mtx(count_filepath).T
     barcodes = read_csv(output_dir.joinpath("count_matrix_barcodes.tsv"), sep="\t", header=None)
     genes = read_csv(output_dir.joinpath("count_matrix_genes.tsv"), sep="\t", header=None)
-    logging.debug(f"genes.columns: {genes.columns}")
-    logging.debug(genes)
+    logger.debug(f"genes.columns: {genes.columns}")
+    logger.debug(genes)
     metadata = read_csv(output_dir.joinpath("metadata.csv"), sep=",", header=0)
     assert all(metadata.iloc[:, 0] == barcodes.iloc[:, 0]), "Barcodes in metadata are incorrect!"
     metadata.rename(columns={"Unnamed: 0": "barcode"}, inplace=True)
     metadata.set_index("barcode", inplace=True)
-    logging.debug(f"metadata.columns: {metadata.columns}")
+    logger.debug(f"metadata.columns: {metadata.columns}")
     adata.obs = metadata
     adata.var_names = genes[0]
     adata.uns["gsm_metadata"] = gsm.metadata
@@ -253,4 +254,4 @@ def download_gsm(gsm: GSM, output_dir: TextIOWrapper) :
     os.remove(output_dir.joinpath("count_matrix_barcodes.tsv"))
     os.remove(output_dir.joinpath("count_matrix_genes.tsv"))
     os.remove(output_dir.joinpath("metadata.csv"))
-    logging.debug(f"Directory list (at end): {os.listdir(output_dir)}")
+    logger.debug(f"Directory list (at end): {os.listdir(output_dir)}")

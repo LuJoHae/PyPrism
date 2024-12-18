@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import List
 from enum import Enum
+from collections.abc import Iterable
 
 
 TCGAProjectName = Enum("TCGAProjectName", [
-    "ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRP", "LAML", "LGG", "LIHC",
+    "ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP", "LAML", "LGG", "LIHC",
     "LUAD", "LUSC", "MESO", "OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "TGCT", "THCA", "THYM",
     "UCEC", "UCS", "UVM"
 ])
@@ -92,3 +93,13 @@ tcga_project_single_cell_sources = [
     TCGA("UCS", []),
     TCGA("CHOL", [])
 ]
+
+
+def patient(barcode: str | Iterable[str]) -> str | List[str]:
+    def take12(barcode_: str) -> str:
+        return barcode_[:12]
+
+    if isinstance(barcode, str):
+        return take12(barcode[:12])
+    if isinstance(barcode, Iterable):
+        return list(map(take12, barcode))

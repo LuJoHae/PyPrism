@@ -53,7 +53,7 @@ def add_mutation_data(project):
     bdata = adata.copy()
     bdata.X = np.full((adata.n_obs, adata.n_vars), False)
 
-    mutations = pd.read_hdf("../../mutations.h5pd", mode="r")
+    mutations = pd.read_hdf("../../download/mutations.h5pd", mode="r")
     mutations = mutations[mutations["project"] == project]
 
     alice, bob = 0, 0
