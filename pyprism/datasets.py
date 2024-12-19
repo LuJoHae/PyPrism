@@ -260,11 +260,11 @@ def deconvolution_fractions_tcga_all(store: Store):
         logger.debug("Combining deconvolution fractions TCGA")
         assert len(derivation_store_files) == 1
         data = derivation_store_files[0].get()
-        barcodes = []
-        expression_datas = []
         data_tree = {}
         for project_name, project_data in data.items():
             logger.debug(f"Combining deconvolution fractions {project_name}")
+            expression_datas = []
+            barcodes = []
             for k, v in project_data.items():
                 barcodes.append(k)
                 expression_datas.append(v)
