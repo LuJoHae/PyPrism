@@ -93,6 +93,14 @@ class OSDependentHash:
         else:
             raise OSError(f"Unsupported platform: {platform}")
 
+    def get_alternative_hash(self) -> Hash:
+        if platform == "linux" or platform == "linux2":
+            return self._darwin_hash
+        elif platform == "darwin":
+            return self._linux_hash
+        else:
+            raise OSError(f"Unsupported platform: {platform}")
+
     def set_hash(self, hash_: Hash):
         if platform == "linux" or platform == "linux2":
             self._linux_hash = hash_
@@ -117,11 +125,17 @@ class StoreElement:
     def get_hash(self) -> Hash:
         return self._os_dependent_hash.get_hash()
 
+    def get_alternative_hash(self) -> Hash:
+        return self._os_dependent_hash.get_alternative_hash()
+
     def set_hash(self, hash: Hash):
         return self._os_dependent_hash.set_hash(hash)
 
     def get_path(self):
         return self._store.get_path() / f"{str(self.get_hash())}-{self._name}"
+
+    def get_alternative_path(self):
+        return self._store.get_path() / f"{str(self.get_alternative_hash())}-{self._name}"
 
     def store_exists(self):
         return self._store.exists()
@@ -130,6 +144,11 @@ class StoreElement:
         if not self.store_exists():
             raise FileNotFoundError("Store does not exist!")
         return self.get_path().exists()
+
+    def exists_alternative(self):
+        if not self.store_exists():
+            raise FileNotFoundError("Store does not exist!")
+        return self.get_alternative_path().exists()
 
     def _download(self):
         with TemporaryDirectory() as tmpdir:
@@ -153,6 +172,8 @@ class StoreElement:
     def get(self, verbose: bool = False):
         if self.exists():
             logger.info(f"Store file {self} already exists!")
+        elif self.exists_alternative():
+            logger.info(f"Store file {self} already exists in alternative form!")
         else:
             logger.info(f"Downloading derivations files of {self}!")
             self._download_derivation_files()
