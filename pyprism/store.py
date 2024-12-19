@@ -51,6 +51,8 @@ class HiddenConsoleOutput:
 class Store:
     def __init__(self, path: Path = Path("store")):
         self._path = Path(path)
+        if not self._path.exists():
+            logger.warning("Store does not yet exist!")
 
     def __str__(self):
         return f"Store at \"{self._path}\""
