@@ -1,18 +1,8 @@
 import pyprism
-import scanpy as sc
-from pathlib import Path
+import logging
 
-subsample = 1000
+logging.getLogger("pyprism").setLevel(logging.DEBUG)
 
-store = pyprism.store.Store(path=Path("./store"))
-adata = pyprism.datasets.WuEtAl2021(store=store).get("GSM5354522")
-print("Number of samples: {}".format(adata.n_obs))
-adata = adata[~adata.obs_names.duplicated()].copy()
-print("Number of non-duplicate samples: {}".format(adata.n_obs))
-adata = pyprism.utils.sample_adata(adata, subsample)
-print("Number of subsamples: {}".format(adata.n_obs))
-sc.pp.normalize_total(adata)
-sc.pp.log1p(adata)
-# pyprism.clustering.calc_kmeans_centroids(adata, n_clusters=10)
-pyprism.clustering.calc_leiden_centroids(adata)
-print(adata)
+store = pyprism.store.Store("./store")
+
+data = pyprism.datasets.deconvolution_fractions_tcga_all(store).get()
