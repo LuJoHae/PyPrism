@@ -4,6 +4,8 @@ from anndata import AnnData  # type: ignore
 from pandas.core.common import random_state
 from pyensembl import EnsemblRelease
 from numpy.random import default_rng as rng
+from xarray import Dataset, DataArray
+from dask.array import zeros as dask_zeros
 import logging
 
 
@@ -15,6 +17,13 @@ def test_logger():
     logger.warning("waling")
     logger.info("impfo")
     logger.debug("diback")
+
+
+def init_zarr(name: str, filename: str, coords):
+    data_array = DataArray(data=dask_zeros([len(axis) for axis in coords.values()], chunks="auto"), dims=coords.keys(), coords=coords)
+    data = Dataset(data_vars={name: data_array})
+    _ = data.to_zarr(filename, mode="w")
+    data.close()
 
 
 def sum_data_parts(data: AnnData, partition_map: dict) -> AnnData:
