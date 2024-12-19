@@ -269,7 +269,7 @@ def deconvolution_fractions_tcga_all(store: Store):
                 barcodes.append(k)
                 expression_datas.append(v)
             project_data = xr_concat(expression_datas, dim="barcode")
-            project_data.assign_coords({"barcode": barcodes})
+            project_data = project_data.assign_coords({"barcode": barcodes})
             project_data["gene_names"] = project_data["gene_names"].isel(barcode=0)
             project_data["cell_type"] = project_data["cell_type"].isel(barcode=0)
             data_tree[project_name] = DataTree(project_data)
@@ -284,8 +284,8 @@ def deconvolution_fractions_tcga_all(store: Store):
 
     store_element = StoreElement(
         name="deconvolution_fractions_tcga_all",
-        linux_hash=Hash(None),
-        darwin_hash=Hash(None),
+        linux_hash=Hash("5d8e3175523c6db139fe47e6088cd077"),
+        darwin_hash=Hash("5d8e3175523c6db139fe47e6088cd077"),
         store=store,
         derivation=derivation,
         derivation_files=[deconvolution_fractions_tcga(store=store)],
