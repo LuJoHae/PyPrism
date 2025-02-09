@@ -280,7 +280,7 @@ def deconvolution_fractions_tcga_all(store: Store):
         )
 
     def load_from_store(self_: StoreElement) -> AnnData:
-        return open_datatree(self_.get_path().joinpath("deconvolution_fractions_tcga_all.hdf5"))
+        return open_datatree(self_.get_existing_path().joinpath("deconvolution_fractions_tcga_all.hdf5"), engine="netcdf4")
 
     store_element = StoreElement(
         name="deconvolution_fractions_tcga_all",

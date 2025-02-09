@@ -1,4 +1,5 @@
 import logging
+from os.path import exists
 from pathlib import Path
 import GEOparse
 from io import TextIOWrapper
@@ -138,6 +139,15 @@ class StoreElement:
 
     def get_alternative_path(self):
         return self._store.get_path() / f"{str(self.get_alternative_hash())}-{self._name}"
+
+    def get_existing_path(self):
+        if self.exists():
+            path = self.get_orthodox_path()
+        elif self.exists_alternative():
+            path = self.get_alternative_path()
+        else:
+            raise FileNotFoundError("Elementd does not exist in store!")
+        return path
 
     def store_exists(self):
         return self._store.exists()
