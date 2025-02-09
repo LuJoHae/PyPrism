@@ -145,7 +145,7 @@ def mutations_tcga(store: Store):
 
     store_element = StoreElement(
         name="mutations_TCGA",
-        linux_hash=Hash("bob"),
+        linux_hash=Hash("eb7b80a52bb3ba2840db66e3d5cef16e"),
         darwin_hash=Hash("eb7b80a52bb3ba2840db66e3d5cef16e"),
         store=store,
         derivation=derivation,
